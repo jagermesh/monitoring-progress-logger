@@ -1,16 +1,5 @@
-/* global require */
-/* global exports */
-/* global process */
-
 const gulp = require('gulp');
-const concat = require('gulp-concat');
-const sass = require('gulp-sass');
 const jshint = require('gulp-jshint');
-const terser = require('gulp-terser');
-const rename = require('gulp-rename');
-const shell = require('gulp-shell');
-const merge = require('merge-stream');
-const child_process = require('child_process');
 
 const configs = { jshint: { src: ['*.js', '!node_modules/**/*.js'] } };
 
