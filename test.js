@@ -9,6 +9,7 @@ function sleep(delay) {
 (async function() {
   const op1max = 200;
   const op2max = 120;
+  const timeout = 100;
   const progressLogger = new ProgressLogger();
   const loggerSession1 = progressLogger.createSession('Testing progress from JS (1)');
   const loggerSession2 = progressLogger.createSession('Testing progress from JS (2)');
@@ -24,14 +25,17 @@ function sleep(delay) {
     for(let i2 = 0; i2 < op2max; i2++) {
       loggerOperation12.step();
       loggerOperation22.step();
-      await sleep(100);
+      await sleep(timeout);
     }
-    loggerOperation12.finish();
-    loggerOperation22.finish();
+    // loggerOperation12.finish(false);
+    // loggerOperation22.finish(false);
     loggerOperation11.step();
-    loggerOperation22.step();
-    await sleep(100);
+    loggerOperation21.step();
+    await sleep(timeout);
   }
-  loggerOperation11.finish();
-  loggerOperation22.finish();
+  // loggerOperation11.finish(false);
+  // loggerOperation22.finish(false);
+  loggerSession1.finish();
+  loggerSession2.finish();
 })();
+
