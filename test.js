@@ -7,21 +7,15 @@ function sleep(delay) {
 }
 
 (async function() {
-
-  // const progressLogger = new ProgressLogger('http://vnode.edoctrina.org:8082');
-  const progressLogger = new ProgressLogger();
-
-  const loggerSession1 = progressLogger.createSession('Testing progress from JS (1)');
-  const loggerSession2 = progressLogger.createSession('Testing progress from JS (2)');
-
   const op1max = 200;
   const op2max = 120;
-
+  const progressLogger = new ProgressLogger();
+  const loggerSession1 = progressLogger.createSession('Testing progress from JS (1)');
+  const loggerSession2 = progressLogger.createSession('Testing progress from JS (2)');
   const loggerOperation11 = loggerSession1.createOperation('Main task (1)');
   const loggerOperation12 = loggerSession1.createOperation('Sub task (1)');
   const loggerOperation21 = loggerSession2.createOperation('Main task (2)');
   const loggerOperation22 = loggerSession2.createOperation('Sub task (2)');
-
   loggerOperation11.start(op1max);
   loggerOperation21.start(op1max);
   for(let i1 = 0; i1 < op1max; i1++) {
