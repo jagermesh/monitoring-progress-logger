@@ -1,10 +1,34 @@
-const ProgressLogger = require(__dirname + '/index.js');
+const MonitoringHub       = require('monitoring-hub');
+const MonitoringDashboard = require('monitoring-dashboard');
+const MonitoringSensor    = require('monitoring-sensor');
+const ProgressLogger      = require(__dirname + '/index.js');
 
 const config = {
-  sensor: {
+  hub: {
+    hubPort: 8082
+  }
+, dashboard: {
+    backEndPort: 8081
+  , frontEndPort: 8083
+  , backEndUrl: 'http://localhost:8081'
+  , hubUrl: 'http://localhost:8082'
+  }
+, sensor: {
     hubUrl: 'http://localhost:8082'
+  , metrics: [
+      { name: 'LA' }
+    , { name: 'ProcessList' }
+    ]
   }
 };
+
+const hub       = new MonitoringHub(config.hub);
+const dashboard = new MonitoringDashboard(config.dashboard);
+const sensor    = new MonitoringSensor(config.sensor);
+
+hub.start();
+dashboard.start();
+sensor.start();
 
 function sleep(delay) {
   return new Promise(function(resolve) {

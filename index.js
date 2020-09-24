@@ -93,7 +93,8 @@ function ProgressSession(hubUrl, name) {
     __hubConnection = socketClient.connect(__hubUrl, { reconnect: true });
 
     __hubConnection.on('connect', function() {
-      __hubConnection.emit( 'registerSensor', { sensorName: 'localhost'
+      __hubConnection.emit( 'registerSensor', { sensorUid:   __uid
+                                              , sensorName: 'localhost'
                                               , metricsList: [ { uid:          _this.getUid()
                                                                , name:         _this.getName()
                                                                , rendererName: 'Progress'
@@ -131,7 +132,8 @@ function ProgressSession(hubUrl, name) {
               }
             });
             __hubConnection.emit( 'sensorData'
-                                , { metricInfo: { uid: __uid }
+                                , { sensorUid:  __uid
+                                  , metricUid:  __uid
                                   , metricData: { operations: operations
                                                 , title:      _this.getName()
                                                 }
