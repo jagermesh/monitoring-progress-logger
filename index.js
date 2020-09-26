@@ -119,29 +119,25 @@ function ProgressSession(hubUrl, name) {
       if (!__hubConnection) {
         connect();
       }
-      if (__hubConnection) {
-        if (__hubConnection.connected) {
-          if (__registered) {
-            let operations = [];
-            __operations.map(function(operation) {
-              if (operation.isStarted() && !operation.isFinished()) {
-                operations.push({ name:    operation.getName()
-                                , current: operation.getCurrent()
-                                , total:   operation.getTotal()
-                                });
-              }
-            });
-            __hubConnection.emit( 'sensorData'
-                                , { sensorUid:  __uid
-                                  , metricUid:  __uid
-                                  , metricData: { operations: operations
-                                                , title:      _this.getName()
-                                                }
-                                  ,
-                                  }
-                                );
+      if (__hubConnection && __hubConnection.connected && __registered) {
+        let operations = [];
+        __operations.map(function(operation) {
+          if (operation.isStarted() && !operation.isFinished()) {
+            operations.push({ name:    operation.getName()
+                            , current: operation.getCurrent()
+                            , total:   operation.getTotal()
+                            });
           }
-        }
+        });
+        __hubConnection.emit( 'sensorData'
+                            , { sensorUid:  __uid
+                              , metricUid:  __uid
+                              , metricData: { operations: operations
+                                            , title:      _this.getName()
+                                            }
+                              ,
+                              }
+                            );
       }
     } catch (error) {
       // _this.error('    Metric: ' + metricObj.getName() + ', Error: ' + error);
