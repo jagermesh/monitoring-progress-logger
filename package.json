@@ -9,8 +9,8 @@
     "gulp": "^4.0.2",
     "gulp-jshint": "^2.1.0",
     "jshint": "^2.12.0",
-    "monitoring-dashboard": "^1.0.19",
-    "monitoring-hub": "^1.0.15",
+    "monitoring-dashboard": "^1.0.21",
+    "monitoring-hub": "^1.0.16",
     "monitoring-sensor": "^1.0.12"
   },
   "dependencies": {
