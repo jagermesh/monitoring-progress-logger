@@ -29,12 +29,12 @@ function sleep(delay) {
     loggerOperation12.start(op2max);
     loggerOperation22.start(op2max);
     for(let i2 = 0; i2 < op2max; i2++) {
-      loggerOperation12.step();
-      loggerOperation22.step();
+      loggerOperation12.current++;
+      loggerOperation22.current++;
       await sleep(timeout);
     }
-    loggerOperation11.step();
-    loggerOperation21.step();
+    loggerOperation11.current++;
+    loggerOperation21.current++;
     await sleep(timeout);
   }
   loggerSession1.finish();

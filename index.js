@@ -1,186 +1,149 @@
-const uid          = require('uuid');
-const socketClient = require('socket.io-client');
+const uuid = require('uuid');
+const os = require('os');
 
-function ProgressOperation(session, name) {
+const { SensorHubConnector } = require('monitoring-sensor');
 
-  const _this = this;
+class ProgressOperation {
 
-  let __isStarted  = false;
-  let __isFinished = false;
-  let __current    = 0;
-  let __total      = 0;
-  let __name       = name;
-  let __session    = session;
+  constructor(session, name) {
+    const _this = this;
 
-  _this.getName = function() {
-    return __name;
-  };
+    this.isStarted  = false;
+    this.isFinished = false;
+    this.opCurrent  = 0;
+    this.opTotal    = 0;
+    this.opName     = name;
+    this.session    = session;
+  }
 
-  _this.setName = function(value) {
-    __name = value;
-  };
+  start(total) {
+    this.isStarted  = true;
+    this.isFinished = false;
+    this.opCurrent  = 0;
+    this.opTotal    = total;
+    this.session.sendData();
+  }
 
-  _this.setTotal = function(value) {
-    __total += value;
-  };
+  get total() {
+    return this.opTotal;
+  }
 
-  _this.setCurrent = function(value) {
-    __current = value;
-  };
+  set total(value) {
+    this.opTotal = value;
+    this.session.sendData();
+  }
 
-  _this.getCurrent = function() {
-    return __current;
-  };
+  get current() {
+    return this.opCurrent;
+  }
 
-  _this.getTotal = function() {
-    return __total;
-  };
+  set current(value) {
+    this.opCurrent = value;
+    this.session.sendData();
+  }
 
-  _this.isStarted = function() {
-    return __isStarted;
-  };
+  get name() {
+    return this.opName;
+  }
 
-  _this.isFinished = function() {
-    return __isFinished;
-  };
+  set name(value) {
+    this.opName = value;
+    this.session.sendData();
+  }
 
-  _this.start = function(total) {
-    __isStarted  = true;
-    __isFinished = false;
-    __current    = 0;
-    __total      = total;
-    __session.sendData();
-  };
-
-  _this.incTotal = function(value) {
-    __total += value;
-    if (__total > __current) {
-      __isFinished = false;
-    }
-    __session.sendData();
-  };
-
-  _this.step = function(increment) {
-    increment = increment || 1;
-    __current += increment;
-    __session.sendData();
-  };
-
-  _this.finish = function() {
-    __current = __total;
-    __isFinished = true;
-    __isStarted  = false;
-    __session.sendData();
-  };
-
-  return _this;
+  finish() {
+    this.opCurrent  = this.opTotal;
+    this.isFinished = true;
+    this.isStarted  = false;
+    this.session.sendData();
+  }
 
 }
 
-function ProgressSession(hubUrl, name) {
+class ProgressSession {
 
-  const _this = this;
+  constructor(hubUrl, name) {
+    const _this = this;
 
-  let __hubUrl     = hubUrl;
-  let __uid        = uid.v4();
-  let __name       = name;
+    this.sensorUid  = uuid.v4();
+    this.sensorName = os.hostname();
+    this.metricUid  = uuid.v4();
+    this.metricName = name;
 
-  let __registered = false;
-  let __operations = [];
-  let __hubConnection;
+    this.operations = [];
 
-  function connect() {
-    __hubConnection = socketClient.connect(__hubUrl, { reconnect: true });
+    let metricDescriptor = {
+      sensorInfo: {
+        sensorUid: _this.sensorUid,
+        sensorName: _this.sensorName,
+      },
+      metricInfo: {
+        metricUid: _this.metricUid,
+        metricName: _this.metricName,
+        metricRenderer: 'Progress',
+      },
+      metricConfig: {
+      }
+    };
 
-    __hubConnection.on('connect', function() {
-      __hubConnection.emit( 'registerSensor', { sensorUid:   __uid
-                                              , sensorName: 'localhost'
-                                              , metricsList: [ { uid:          _this.getUid()
-                                                               , name:         _this.getName()
-                                                               , rendererName: 'Progress'
-                                                               , metricConfig: { }
-                                                               }
-                                                             ]
-                                              });
+    this.sensorHubConnector = new SensorHubConnector(hubUrl);
+
+    this.sensorHubConnector.on('connect', function() {
+      _this.sensorHubConnector.registerMetric(metricDescriptor);
     });
 
-    __hubConnection.on('sensorRegistered', function(data) {
-      __registered = true;
-      _this.sendData();
-    });
-
-    __hubConnection.on('disconnect', function(data) {
-      __registered = false;
+    this.sensorHubConnector.on('metricRegistered', function(data) {
+      if (data.metricInfo.metricUid == _this.metricUid) {
+        _this.sendData();
+      }
     });
   }
 
-  _this.sendData = function() {
+  sendData() {
     try {
-      if (!__hubConnection) {
-        connect();
-      }
-      if (__hubConnection && __hubConnection.connected && __registered) {
-        let operations = [];
-        __operations.map(function(operation) {
-          if (operation.isStarted() && !operation.isFinished()) {
-            operations.push({ name:    operation.getName()
-                            , current: operation.getCurrent()
-                            , total:   operation.getTotal()
-                            });
-          }
-        });
-        __hubConnection.emit( 'sensorData'
-                            , { sensorUid:  __uid
-                              , metricUid:  __uid
-                              , metricData: { operations: operations
-                                            , title:      _this.getName()
-                                            }
-                              ,
-                              }
-                            );
-      }
+      let metricData = {
+        title:      this.metricName
+      , operations: []
+      };
+      this.operations.map(function(operation) {
+        if (operation.isStarted && !operation.isFinished) {
+          metricData.operations.push({
+            name:    operation.name
+          , current: operation.current
+          , total:   operation.total
+          });
+        }
+      });
+      this.sensorHubConnector.sendData(this.metricUid, metricData);
     } catch (error) {
-      // _this.error('    Metric: ' + metricObj.getName() + ', Error: ' + error);
+      console.log(error);
     }
-  };
+  }
 
-  _this.getUid = function() {
-    return __uid;
-  };
-
-  _this.getName = function() {
-    return __name;
-  };
-
-  _this.createOperation = function(name) {
-    let progressOperation = new ProgressOperation(_this, name);
-    __operations.push(progressOperation);
+  createOperation(name) {
+    let progressOperation = new ProgressOperation(this, name);
+    this.operations.push(progressOperation);
     return progressOperation;
-  };
+  }
 
-  _this.finish = function() {
-    __operations.map(function(operation) {
+  finish() {
+    this.operations.map(function(operation) {
       operation.finish();
     });
-    __hubConnection.close();
-    __hubConnection = undefined;
-  };
-
-  return _this;
+    this.sensorHubConnector.disconnect();
+  }
 
 }
 
-function ProgressLogger(hubUrl) {
+class ProgressLogger {
 
-  const _this = this;
+  constructor(hubUrl) {
+    this.hubUrl = hubUrl ? hubUrl : 'http://localhost:8082';
+  }
 
-  let __hubUrl = hubUrl ? hubUrl : 'http://localhost:8082';
-
-  _this.createSession = function(name) {
-    return new ProgressSession(__hubUrl, name);
-  };
-
-  return _this;
+  createSession(name) {
+    return new ProgressSession(this.hubUrl, name);
+  }
 
 }
 
