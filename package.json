@@ -14,8 +14,8 @@
     "monitoring-sensor": "^1.0.26"
   },
   "dependencies": {
-    "socket.io-client": "^2.3.1",
-    "uuid": "^3.4.0"
+    "socket.io-client": "^3.0.1",
+    "uuid": "^8.3.1"
   },
   "deprecated": false,
   "description": "Monitoring Progress Logger",
