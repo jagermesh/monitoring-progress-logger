@@ -14,7 +14,6 @@
     "monitoring-sensor": "^1.0.27"
   },
   "dependencies": {
-    "socket.io-client": "^3.0.4",
     "uuid": "^8.3.2"
   },
   "deprecated": false,
