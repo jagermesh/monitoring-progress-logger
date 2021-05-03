@@ -3,19 +3,19 @@ class ProgressOperation {
   constructor(session, name) {
     const _this = this;
 
-    this.isStarted  = false;
+    this.isStarted = false;
     this.isFinished = false;
-    this.opCurrent  = 0;
-    this.opTotal    = 0;
-    this.opName     = name;
-    this.session    = session;
+    this.opCurrent = 0;
+    this.opTotal = 0;
+    this.opName = name;
+    this.session = session;
   }
 
   start(total) {
-    this.isStarted  = true;
+    this.isStarted = true;
     this.isFinished = false;
-    this.opCurrent  = 0;
-    this.opTotal    = total;
+    this.opCurrent = 0;
+    this.opTotal = total;
     this.session.sendData();
   }
 
@@ -47,9 +47,9 @@ class ProgressOperation {
   }
 
   finish() {
-    this.opCurrent  = this.opTotal;
+    this.opCurrent = this.opTotal;
     this.isFinished = true;
-    this.isStarted  = false;
+    this.isStarted = false;
     this.session.sendData();
   }
 

@@ -1,4 +1,4 @@
-const ProgressSession = require(__dirname + '/src/ProgressSession.js');
+const ProgressSession = require(`${__dirname}/src/ProgressSession.js`);
 
 class ProgressLogger {
 

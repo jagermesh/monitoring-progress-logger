@@ -3,16 +3,16 @@ const os = require('os');
 
 const { SensorHubConnector } = require('monitoring-sensor');
 
-const ProgressOperation = require(__dirname + '/ProgressOperation.js');
+const ProgressOperation = require(`${__dirname}/ProgressOperation.js`);
 
 class ProgressSession {
 
   constructor(hubUrl, name, description) {
     const _this = this;
 
-    this.sensorUid  = uuid.v4();
+    this.sensorUid = uuid.v4();
     this.sensorName = os.hostname();
-    this.metricUid  = uuid.v4();
+    this.metricUid = uuid.v4();
     this.sessionName = name;
     this.sessionDescription = description || '';
 

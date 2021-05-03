@@ -1,4 +1,4 @@
-const ProgressLogger = require(__dirname + '/index.js');
+const ProgressLogger = require(`${__dirname}/index.js`);
 
 const config = {
   sensor: {
@@ -40,4 +40,3 @@ function sleep(delay) {
   loggerSession1.finish();
   loggerSession2.finish();
 })();
-
