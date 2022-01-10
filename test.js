@@ -25,10 +25,10 @@ function sleep(delay) {
   const loggerOperation22 = loggerSession2.createOperation('Sub task (2)');
   loggerOperation11.start(op1max);
   loggerOperation21.start(op1max);
-  for(let i1 = 0; i1 < op1max; i1++) {
+  for (let i1 = 0; i1 < op1max; i1++) {
     loggerOperation12.start(op2max);
     loggerOperation22.start(op2max);
-    for(let i2 = 0; i2 < op2max; i2++) {
+    for (let i2 = 0; i2 < op2max; i2++) {
       loggerOperation12.current++;
       loggerOperation22.current++;
       await sleep(timeout);

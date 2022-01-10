@@ -1,7 +1,9 @@
 const uuid = require('uuid');
 const os = require('os');
 
-const { SensorHubConnector } = require('monitoring-sensor');
+const {
+  SensorHubConnector
+} = require('monitoring-sensor');
 
 const ProgressOperation = require(`${__dirname}/ProgressOperation.js`);
 
@@ -28,8 +30,7 @@ class ProgressSession {
         metricName: _this.sessionName,
         metricRenderer: 'Progress',
       },
-      metricConfig: {
-      }
+      metricConfig: {}
     };
 
     this.sensorHubConnector = new SensorHubConnector(hubUrl);
