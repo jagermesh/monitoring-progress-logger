@@ -8,7 +8,6 @@ const {
 const ProgressOperation = require(`${__dirname}/ProgressOperation.js`);
 
 class ProgressSession {
-
   constructor(hubUrl, name, description) {
     const _this = this;
 
@@ -80,7 +79,6 @@ class ProgressSession {
     });
     this.sensorHubConnector.disconnect();
   }
-
 }
 
 module.exports = ProgressSession;

@@ -1,8 +1,5 @@
 class ProgressOperation {
-
   constructor(session, name) {
-    const _this = this;
-
     this.isStarted = false;
     this.isFinished = false;
     this.opCurrent = 0;
@@ -52,7 +49,6 @@ class ProgressOperation {
     this.isStarted = false;
     this.session.sendData();
   }
-
 }
 
 module.exports = ProgressOperation;
