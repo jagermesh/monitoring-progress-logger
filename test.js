@@ -2,17 +2,17 @@ const ProgressLogger = require(`${__dirname}/index.js`);
 
 const config = {
   sensor: {
-    hubUrl: 'http://localhost:8082'
-  }
+    hubUrl: 'http://localhost:8082',
+  },
 };
 
 function sleep(delay) {
-  return new Promise(function(resolve) {
+  return new Promise((resolve) => {
     setTimeout(resolve, delay);
   });
 }
 
-(async function() {
+(async () => {
   const op1max = 20000;
   const op2max = 120;
   const timeout = 100;

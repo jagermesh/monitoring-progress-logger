@@ -2,15 +2,13 @@ const uuid = require('uuid');
 const os = require('os');
 
 const {
-  SensorHubConnector
+  SensorHubConnector,
 } = require('monitoring-sensor');
 
 const ProgressOperation = require(`${__dirname}/ProgressOperation.js`);
 
 class ProgressSession {
   constructor(hubUrl, name, description) {
-    const _this = this;
-
     this.sensorUid = uuid.v4();
     this.sensorName = os.hostname();
     this.metricUid = uuid.v4();
@@ -21,26 +19,27 @@ class ProgressSession {
 
     let metricDescriptor = {
       sensorInfo: {
-        sensorUid: _this.sensorUid,
-        sensorName: _this.sensorName,
+        sensorUid: this.sensorUid,
+        sensorName: this.sensorName,
       },
       metricInfo: {
-        metricUid: _this.metricUid,
-        metricName: _this.sessionName,
+        metricUid: this.metricUid,
+        metricName: this.sessionName,
         metricRenderer: 'Progress',
       },
-      metricConfig: {}
+      metricConfig: {},
     };
 
     this.sensorHubConnector = new SensorHubConnector(hubUrl);
 
-    this.sensorHubConnector.on('connect', function() {
-      _this.sensorHubConnector.registerMetric(metricDescriptor);
+    this.sensorHubConnector.on('connect', () => {
+      console.log(1);
+      this.sensorHubConnector.registerMetric(metricDescriptor);
     });
 
-    this.sensorHubConnector.on('metricRegistered', function(data) {
-      if (data.metricInfo.metricUid == _this.metricUid) {
-        _this.sendData();
+    this.sensorHubConnector.on('metricRegistered', (data) => {
+      if (data.metricInfo.metricUid == this.metricUid) {
+        this.sendData();
       }
     });
   }
@@ -52,7 +51,7 @@ class ProgressSession {
         subTitle: this.sessionDescription,
         operations: [],
       };
-      this.operations.map(function(operation) {
+      this.operations.map((operation) => {
         if (operation.isStarted && !operation.isFinished) {
           metricData.operations.push({
             name: operation.name,
@@ -74,7 +73,7 @@ class ProgressSession {
   }
 
   finish() {
-    this.operations.map(function(operation) {
+    this.operations.map((operation) => {
       operation.finish();
     });
     this.sensorHubConnector.disconnect();
